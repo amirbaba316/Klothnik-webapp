@@ -17,7 +17,7 @@ COPY ./tsconfig.json ./
 COPY . .
 
 # Expose environment variable to select environment configuration (defaults to production)
-ARG ENVIRONMENT=production
+ARG ENVIRONMENT=development
 
 # Copy env files based on environment
 RUN if [ "$ENVIRONMENT" = "production" ]; then \
