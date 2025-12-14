@@ -1,0 +1,47 @@
+name: Deploy klothnick admin webapp.
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: catthehacker/ubuntu:act-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to docker
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker Image
+        run: docker build --platform linux/amd64 --build-arg ENVIRONMENT=development -t amir316/admin-webapp:latest .
+
+      - name: Push Docker Image to Docker Hub
+        run: docker push amir316/admin-webapp:latest
+
+  deploy:
+    needs: build
+    steps:
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ variables.SSH_PORT }}
+          script: |
+            set -e
+            sed -i "s/image: amir316\/admin-webapp:.*$/image: amir316\/admin-webapp:latest/g" /home/ubuntu/docker-compose.yml
+            sudo docker-compose pull
+            sudo docker-compose down --volumes --remove-orphans
+            sudo docker system prune -af
+            sudo docker-compose up -d
+            sudo docker image prune -a -f
+            sudo docker ps
