@@ -31,7 +31,7 @@ export function Categories() {
       const data = await categoryService.getAll();
       setCategories(data);
     } catch (error) {
-      toast.error('Failed to load categories');
+      toast.error('Failed to load categories.');
     } finally {
       setLoading(false);
     }
