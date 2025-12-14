@@ -32,7 +32,7 @@ RUN npm run build
 RUN npm i -g serve
 
 # Serve files using static server
-CMD ["serve", "-s", "build", "-l", "7007"]
+CMD ["serve", "-s", "build", "-l", "8008"]
 
 # docker build --platform linux/amd64 --build-arg ENVIRONMENT=staging -t amir316/admin-webapp .
 # docker run -p  3000:80 amir316/admin-webapp
