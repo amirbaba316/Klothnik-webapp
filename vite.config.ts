@@ -7,7 +7,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'https://api-admin-dev.klothnik.xyz',
+        target: 'https://api-admin.klothnik.xyz',
         changeOrigin: true,
       },
     },
