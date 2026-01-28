@@ -1,4 +1,4 @@
-name: Deploy klothnick admin webapp
+name: Deploy klothnick admin webapp.
 
 on:
   push:
