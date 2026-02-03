@@ -19,7 +19,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker Image
-        run: docker build --platform linux/amd64 --build-arg ENVIRONMENT=development -t amir3160/admin-webapp:latest .
+        run: docker build --platform linux/amd64 --build-arg -t amir3160/admin-webapp:latest .
 
       - name: Push Docker Image to Docker Hub
         run: docker push amir3160/admin-webapp:latest
