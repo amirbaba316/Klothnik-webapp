@@ -19,10 +19,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker Image
-        run: docker build --platform linux/amd64 --build-arg ENVIRONMENT=development -t amir316/admin-webapp:latest .
+        run: docker build --platform linux/amd64 --build-arg ENVIRONMENT=development -t amir3160/admin-webapp:latest .
 
       - name: Push Docker Image to Docker Hub
-        run: docker push amir316/admin-webapp:latest
+        run: docker push amir3160/admin-webapp:latest
 
   deploy:
     needs: build
@@ -37,7 +37,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            sed -i "s/image: amir316\/admin-webapp:.*$/image: amir316\/admin-webapp:latest/g" /home/ubuntu/docker-compose.yml
+            sed -i "s/image: amir3160\/admin-webapp:.*$/image: amir3160\/admin-webapp:latest/g" /home/ubuntu/docker-compose.yml
             sudo docker-compose pull
             sudo docker-compose down --volumes --remove-orphans
             sudo docker system prune -af
