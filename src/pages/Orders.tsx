@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Table } from '../components/Table';
 import { Modal } from '../components/Modal';
 import { orderService } from '../services/order.service';
@@ -22,6 +22,17 @@ export function Orders() {
     loadOrders();
   }, []);
 
+  // Sort orders by creation date (newest first)
+  const sortedOrders = useMemo(() => {
+    return [...orders].sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  }, [orders]);
+
+  const newOrdersCount = useMemo(() => {
+    return orders.filter((order) => !order.isViewed).length;
+  }, [orders]);
+
   const loadOrders = async () => {
     try {
       setLoading(true);
@@ -38,6 +49,18 @@ export function Orders() {
     try {
       setIsModalOpen(true);
       setModalLoading(true);
+
+      // Mark order as viewed if not already viewed
+      if (!order.isViewed) {
+        await orderService.updateView(order._id, true);
+
+        // Update local state immediately to reflect the change
+        setOrders((prevOrders) =>
+          prevOrders.map((o) =>
+            o._id === order._id ? { ...o, isViewed: true } : o
+          )
+        );
+      }
 
       // Fetch full order details including populated user
       const fullOrder = await orderService.getById(order._id);
@@ -73,6 +96,10 @@ export function Orders() {
     }
   };
 
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, string> = {
       PLACED: 'badge-info',
@@ -102,7 +129,20 @@ export function Orders() {
   const columns = [
     {
       header: 'Order ID',
-      accessor: (row: Order) => row._id.slice(-6).toUpperCase(),
+      accessor: (row: Order) => (
+        <div className='flex items-center gap-2'>
+          <span>{row._id.slice(-6).toUpperCase()}</span>
+          {!row.isViewed ? (
+            <span className='inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 animate-pulse'>
+              NEW
+            </span>
+          ) : (
+            <span className='inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600'>
+              SEEN
+            </span>
+          )}
+        </div>
+      ),
     },
     {
       header: 'Total',
@@ -125,16 +165,28 @@ export function Orders() {
   return (
     <div className='space-y-6'>
       <div>
-        <h1 className='text-3xl font-display font-bold text-gray-900'>
-          Orders
-        </h1>
-        <p className='text-gray-600 mt-1'>
-          Manage customer orders and shipments
-        </p>
+        <div className='flex items-center justify-between'>
+          <div>
+            <h1 className='text-3xl font-display font-bold text-gray-900'>
+              Orders
+            </h1>
+            <p className='text-gray-600 mt-1'>
+              Manage customer orders and shipments
+            </p>
+          </div>
+          {newOrdersCount > 0 && (
+            <div className='flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-lg'>
+              <span className='w-2 h-2 bg-red-500 rounded-full animate-pulse'></span>
+              <span className='text-sm font-medium text-red-800'>
+                {newOrdersCount} new order{newOrdersCount !== 1 ? 's' : ''}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       <Table
-        data={orders}
+        data={sortedOrders}
         columns={columns}
         loading={loading}
         onRowClick={handleRowClick}
@@ -142,7 +194,7 @@ export function Orders() {
 
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleModalClose}
         title='Order Details'
         size='lg'
       >
@@ -517,7 +569,7 @@ export function Orders() {
                   </button>
                   <button
                     type='button'
-                    onClick={() => setIsModalOpen(false)}
+                    onClick={handleModalClose}
                     className='btn btn-secondary flex-1'
                   >
                     Close

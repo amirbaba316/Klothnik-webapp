@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Package } from 'lucide-react';
 import { Table } from '../components/Table';
 import { Modal } from '../components/Modal';
 import { productService } from '../services/product.service';
 import { categoryService } from '../services/category.service';
 import { Product, Category } from '../types';
+import { ProductVariants } from './ProductVariants';
 import toast from 'react-hot-toast';
 
 export function Products() {
@@ -13,6 +14,8 @@ export function Products() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProductForVariants, setSelectedProductForVariants] =
+    useState<Product | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -75,7 +78,6 @@ export function Products() {
       data.append('quantity', formData.quantity);
       data.append('weight', formData.weight);
       data.append('size', formData.size);
-      data.append('category', formData.category);
       data.append('status', formData.status);
       data.append(
         'tags',
@@ -87,7 +89,6 @@ export function Products() {
         )
       );
       data.append('options', JSON.stringify({}));
-      data.append('variants', JSON.stringify([]));
       data.append('reviews', JSON.stringify([]));
 
       if (imageFiles) {
@@ -117,7 +118,12 @@ export function Products() {
   };
 
   const handleDelete = async (product: Product) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+    if (
+      !confirm(
+        'Are you sure you want to delete this product? This will also delete all variants.'
+      )
+    )
+      return;
 
     try {
       const categoryId =
@@ -187,6 +193,11 @@ export function Products() {
     return labelMap[status] || status;
   };
 
+  const getVariantCount = (product: Product) => {
+    if (!product.variants) return 0;
+    return Array.isArray(product.variants) ? product.variants.length : 0;
+  };
+
   const columns = [
     {
       header: 'Product',
@@ -205,6 +216,12 @@ export function Products() {
       accessor: (row: Product) => row.quantity || 0,
     },
     {
+      header: 'Variants',
+      accessor: (row: Product) => (
+        <span className='text-sm text-gray-600'>{getVariantCount(row)}</span>
+      ),
+    },
+    {
       header: 'Status',
       accessor: (row: Product) => (
         <span className={`badge ${getStatusBadge(row.status)}`}>
@@ -219,9 +236,20 @@ export function Products() {
           <button
             onClick={(e) => {
               e.stopPropagation();
+              setSelectedProductForVariants(row);
+            }}
+            className='text-blue-600 hover:text-blue-700'
+            title='Manage Variants'
+          >
+            <Package size={18} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
               handleEdit(row);
             }}
             className='text-primary-600 hover:text-primary-700'
+            title='Edit Product'
           >
             <Edit size={18} />
           </button>
@@ -231,6 +259,7 @@ export function Products() {
               handleDelete(row);
             }}
             className='text-red-600 hover:text-red-700'
+            title='Delete Product'
           >
             <Trash2 size={18} />
           </button>
@@ -262,6 +291,7 @@ export function Products() {
 
       <Table data={products} columns={columns} loading={loading} />
 
+      {/* Product Form Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => {
@@ -275,7 +305,7 @@ export function Products() {
           <div className='grid grid-cols-2 gap-4'>
             <div className='col-span-2'>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Product Name
+                Product Name *
               </label>
               <input
                 type='text'
@@ -304,7 +334,7 @@ export function Products() {
 
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Category
+                Category *
               </label>
               <select
                 value={formData.category}
@@ -341,7 +371,7 @@ export function Products() {
 
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Price
+                Price *
               </label>
               <input
                 type='number'
@@ -372,7 +402,22 @@ export function Products() {
 
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
-                SKU
+                Cost Per Item
+              </label>
+              <input
+                type='number'
+                step='0.01'
+                value={formData.costPerItem}
+                onChange={(e) =>
+                  setFormData({ ...formData, costPerItem: e.target.value })
+                }
+                className='input'
+              />
+            </div>
+
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-2'>
+                SKU *
               </label>
               <input
                 type='text'
@@ -381,6 +426,7 @@ export function Products() {
                   setFormData({ ...formData, sku: e.target.value })
                 }
                 className='input'
+                required
               />
             </div>
 
@@ -400,7 +446,7 @@ export function Products() {
 
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Quantity
+                Quantity *
               </label>
               <input
                 type='number'
@@ -409,6 +455,7 @@ export function Products() {
                   setFormData({ ...formData, quantity: e.target.value })
                 }
                 className='input'
+                required
               />
             </div>
 
@@ -424,6 +471,21 @@ export function Products() {
                   setFormData({ ...formData, weight: e.target.value })
                 }
                 className='input'
+              />
+            </div>
+
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-2'>
+                Size
+              </label>
+              <input
+                type='text'
+                value={formData.size}
+                onChange={(e) =>
+                  setFormData({ ...formData, size: e.target.value })
+                }
+                className='input'
+                placeholder='e.g., M, L, XL'
               />
             </div>
 
@@ -453,6 +515,11 @@ export function Products() {
                 onChange={(e) => setImageFiles(e.target.files)}
                 className='input'
               />
+              <p className='text-xs text-gray-500 mt-1'>
+                {selectedProduct && !imageFiles
+                  ? 'Leave empty to keep existing images'
+                  : 'Upload new images (will replace existing)'}
+              </p>
             </div>
           </div>
 
@@ -473,6 +540,17 @@ export function Products() {
           </div>
         </form>
       </Modal>
+
+      {/* Product Variants Modal */}
+      {selectedProductForVariants && (
+        <ProductVariants
+          product={selectedProductForVariants}
+          onClose={() => {
+            setSelectedProductForVariants(null);
+            loadProducts(); // Refresh products to show updated variant count
+          }}
+        />
+      )}
     </div>
   );
 }

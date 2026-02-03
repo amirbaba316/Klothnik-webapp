@@ -50,20 +50,19 @@ export interface Review {
 export interface ProductVariant {
   _id: string;
   productId: string;
-  sku?: string;
+  sku: string;
   price: number;
   compareAtPrice?: number;
   costPerItem?: number;
   barcode?: string;
-  quantity?: number;
+  quantity: number;
   weight?: number;
-  size?: string;
-  color?: string;
+  size: string;
+  color: string;
   image?: string;
-  status: 'ACTIVE' | 'INACTIVE';
-  createdAt: string;
-  updatedAt: string;
-  id?: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED'; // Updated to match backend
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Order {
@@ -90,6 +89,7 @@ export interface Order {
   paymentMethod: string;
   razorpayOrderId?: string;
   orderTimeline?: OrderTimeline;
+  isViewed: boolean;
   createdAt: string;
   updatedAt: string;
   id?: string;

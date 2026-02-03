@@ -24,6 +24,14 @@ export const orderService = {
     return data;
   },
 
+  updateView: async (id: string, viewStatus: boolean): Promise<Order> => {
+    const { data } = await api.put(
+      `/api/v1/orders/${id}/view-order`,
+      { isViewed: viewStatus } // Wrap in object
+    );
+    return data;
+  },
+
   delete: async (id: string): Promise<void> => {
     await api.delete(`/api/v1/orders/${id}`);
   },
