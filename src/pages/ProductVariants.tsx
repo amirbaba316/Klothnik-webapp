@@ -29,7 +29,7 @@ export function ProductVariants({ product, onClose }: ProductVariantsProps) {
     size: '',
     color: '',
     image: '',
-    status: 'ACTIVE' as 'ACTIVE' | 'INACTIVE' | 'ARCHIVED', // Updated
+    status: 'ACTIVE' as 'ACTIVE' | 'INACTIVE' | 'ARCHIVED',
   });
 
   useEffect(() => {
@@ -246,199 +246,207 @@ export function ProductVariants({ product, onClose }: ProductVariantsProps) {
             resetForm();
           }}
           title={selectedVariant ? 'Edit Variant' : 'Add Variant'}
-          size='lg'
+          size='xl'
         >
-          <form onSubmit={handleSubmit} className='space-y-4'>
-            <div className='grid grid-cols-2 gap-4'>
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  SKU *
-                </label>
-                <input
-                  type='text'
-                  value={formData.sku}
-                  onChange={(e) =>
-                    setFormData({ ...formData, sku: e.target.value })
-                  }
-                  className='input'
-                  required
-                />
+          <div className='min-h-[800px]'>
+            <form onSubmit={handleSubmit} className='space-y-6'>
+              <div className='grid grid-cols-2 gap-6'>
+                <div>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    SKU *
+                  </label>
+                  <input
+                    type='text'
+                    value={formData.sku}
+                    onChange={(e) =>
+                      setFormData({ ...formData, sku: e.target.value })
+                    }
+                    className='input'
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Status
+                  </label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        status: e.target.value as any,
+                      })
+                    }
+                    className='input'
+                  >
+                    <option value='ACTIVE'>Active</option>
+                    <option value='INACTIVE'>Inactive</option>
+                    <option value='ARCHIVED'>Archived</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Size *
+                  </label>
+                  <input
+                    type='text'
+                    value={formData.size}
+                    onChange={(e) =>
+                      setFormData({ ...formData, size: e.target.value })
+                    }
+                    className='input'
+                    required
+                    placeholder='S, M, L, XL'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Color *
+                  </label>
+                  <input
+                    type='text'
+                    value={formData.color}
+                    onChange={(e) =>
+                      setFormData({ ...formData, color: e.target.value })
+                    }
+                    className='input'
+                    required
+                    placeholder='Red, Blue, etc.'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Price *
+                  </label>
+                  <input
+                    type='number'
+                    step='0.01'
+                    value={formData.price}
+                    onChange={(e) =>
+                      setFormData({ ...formData, price: e.target.value })
+                    }
+                    className='input'
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Compare At Price
+                  </label>
+                  <input
+                    type='number'
+                    step='0.01'
+                    value={formData.compareAtPrice}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        compareAtPrice: e.target.value,
+                      })
+                    }
+                    className='input'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Cost Per Item
+                  </label>
+                  <input
+                    type='number'
+                    step='0.01'
+                    value={formData.costPerItem}
+                    onChange={(e) =>
+                      setFormData({ ...formData, costPerItem: e.target.value })
+                    }
+                    className='input'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Barcode
+                  </label>
+                  <input
+                    type='text'
+                    value={formData.barcode}
+                    onChange={(e) =>
+                      setFormData({ ...formData, barcode: e.target.value })
+                    }
+                    className='input'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Quantity *
+                  </label>
+                  <input
+                    type='number'
+                    value={formData.quantity}
+                    onChange={(e) =>
+                      setFormData({ ...formData, quantity: e.target.value })
+                    }
+                    className='input'
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Weight (kg)
+                  </label>
+                  <input
+                    type='number'
+                    step='0.01'
+                    value={formData.weight}
+                    onChange={(e) =>
+                      setFormData({ ...formData, weight: e.target.value })
+                    }
+                    className='input'
+                  />
+                </div>
+
+                <div className='col-span-2'>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Image URL (S3 key)
+                  </label>
+                  <input
+                    type='text'
+                    value={formData.image}
+                    onChange={(e) =>
+                      setFormData({ ...formData, image: e.target.value })
+                    }
+                    className='input'
+                    placeholder='products/variant-image.jpg'
+                  />
+                  <p className='text-xs text-gray-500 mt-1'>
+                    Enter the S3 key path for the variant image
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value as any })
-                  }
-                  className='input'
+              <div className='flex gap-3 pt-6'>
+                <button type='submit' className='btn btn-primary flex-1'>
+                  {selectedVariant ? 'Update' : 'Create'}
+                </button>
+                <button
+                  type='button'
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    resetForm();
+                  }}
+                  className='btn btn-secondary flex-1'
                 >
-                  <option value='ACTIVE'>Active</option>
-                  <option value='INACTIVE'>Inactive</option>
-                  <option value='ARCHIVED'>Archived</option>
-                </select>
+                  Cancel
+                </button>
               </div>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Size *
-                </label>
-                <input
-                  type='text'
-                  value={formData.size}
-                  onChange={(e) =>
-                    setFormData({ ...formData, size: e.target.value })
-                  }
-                  className='input'
-                  required
-                  placeholder='S, M, L, XL'
-                />
-              </div>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Color *
-                </label>
-                <input
-                  type='text'
-                  value={formData.color}
-                  onChange={(e) =>
-                    setFormData({ ...formData, color: e.target.value })
-                  }
-                  className='input'
-                  required
-                  placeholder='Red, Blue, etc.'
-                />
-              </div>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Price *
-                </label>
-                <input
-                  type='number'
-                  step='0.01'
-                  value={formData.price}
-                  onChange={(e) =>
-                    setFormData({ ...formData, price: e.target.value })
-                  }
-                  className='input'
-                  required
-                />
-              </div>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Compare At Price
-                </label>
-                <input
-                  type='number'
-                  step='0.01'
-                  value={formData.compareAtPrice}
-                  onChange={(e) =>
-                    setFormData({ ...formData, compareAtPrice: e.target.value })
-                  }
-                  className='input'
-                />
-              </div>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Cost Per Item
-                </label>
-                <input
-                  type='number'
-                  step='0.01'
-                  value={formData.costPerItem}
-                  onChange={(e) =>
-                    setFormData({ ...formData, costPerItem: e.target.value })
-                  }
-                  className='input'
-                />
-              </div>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Barcode
-                </label>
-                <input
-                  type='text'
-                  value={formData.barcode}
-                  onChange={(e) =>
-                    setFormData({ ...formData, barcode: e.target.value })
-                  }
-                  className='input'
-                />
-              </div>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Quantity *
-                </label>
-                <input
-                  type='number'
-                  value={formData.quantity}
-                  onChange={(e) =>
-                    setFormData({ ...formData, quantity: e.target.value })
-                  }
-                  className='input'
-                  required
-                />
-              </div>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Weight (kg)
-                </label>
-                <input
-                  type='number'
-                  step='0.01'
-                  value={formData.weight}
-                  onChange={(e) =>
-                    setFormData({ ...formData, weight: e.target.value })
-                  }
-                  className='input'
-                />
-              </div>
-
-              <div className='col-span-2'>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Image URL (S3 key)
-                </label>
-                <input
-                  type='text'
-                  value={formData.image}
-                  onChange={(e) =>
-                    setFormData({ ...formData, image: e.target.value })
-                  }
-                  className='input'
-                  placeholder='products/variant-image.jpg'
-                />
-                <p className='text-xs text-gray-500 mt-1'>
-                  Enter the S3 key path for the variant image
-                </p>
-              </div>
-            </div>
-
-            <div className='flex gap-3 pt-4'>
-              <button type='submit' className='btn btn-primary flex-1'>
-                {selectedVariant ? 'Update' : 'Create'}
-              </button>
-              <button
-                type='button'
-                onClick={() => {
-                  setIsModalOpen(false);
-                  resetForm();
-                }}
-                className='btn btn-secondary flex-1'
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </Modal>
       </div>
     </Modal>

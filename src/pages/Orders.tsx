@@ -35,10 +35,13 @@ export function Orders() {
 
   const loadOrders = async () => {
     try {
+      console.log('Starting to load orders...');
       setLoading(true);
       const data = await orderService.getAll();
+      console.log('Orders loaded:', data);
       setOrders(data);
     } catch (error) {
+      console.error('Order loading error:', error);
       toast.error('Failed to load orders');
     } finally {
       setLoading(false);
