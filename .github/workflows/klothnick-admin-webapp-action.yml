@@ -28,7 +28,20 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: executing remote ssh commands using ssh key
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.KLOTHNIK_HOST }}
+          username: ${{ secrets.KLOTHNIK_USERNAME }}
+          key: ${{ secrets.KLOTHNIK_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: 'docker-compose.yml'
+          target: '/home/ubuntu/'
+
+      - name: Deploy containers
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.KLOTHNIK_HOST }}
@@ -37,7 +50,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            sed -i "s/image: amir3160\/admin-webapp:.*$/image: amir3160\/admin-webapp:latest/g" /home/ubuntu/docker-compose.yml
+            cd /home/ubuntu
             sudo docker-compose pull
             sudo docker-compose down --volumes --remove-orphans
             sudo docker system prune -af
