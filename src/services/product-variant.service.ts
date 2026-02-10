@@ -1,60 +1,44 @@
+import api from '../config/api';
 import { ProductVariant } from '../types';
 
 class ProductVariantService {
-  private baseUrl = '/api/v1/products';
-
   async getAll(productId: string): Promise<ProductVariant[]> {
-    const response = await fetch(`${this.baseUrl}/${productId}/variants`);
-    if (!response.ok) throw new Error('Failed to fetch variants');
-    return response.json();
+    const { data } = await api.get(`/api/v1/products/${productId}/variants`);
+    return data;
   }
 
   async getById(productId: string, variantId: string): Promise<ProductVariant> {
-    const response = await fetch(
-      `${this.baseUrl}/${productId}/variants/${variantId}`
+    const { data } = await api.get(
+      `/api/v1/products/${productId}/variants/${variantId}`
     );
-    if (!response.ok) throw new Error('Failed to fetch variant');
-    return response.json();
+    return data;
   }
 
   async create(
     productId: string,
-    data: Partial<ProductVariant>
+    payload: Partial<ProductVariant>
   ): Promise<ProductVariant> {
-    const response = await fetch(`${this.baseUrl}/${productId}/variants`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) throw new Error('Failed to create variant');
-    return response.json();
+    const { data } = await api.post(
+      `/api/v1/products/${productId}/variants`,
+      payload
+    );
+    return data;
   }
 
   async update(
     productId: string,
     variantId: string,
-    data: Partial<ProductVariant>
+    payload: Partial<ProductVariant>
   ): Promise<ProductVariant> {
-    const response = await fetch(
-      `${this.baseUrl}/${productId}/variants/${variantId}`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }
+    const { data } = await api.put(
+      `/api/v1/products/${productId}/variants/${variantId}`,
+      payload
     );
-    if (!response.ok) throw new Error('Failed to update variant');
-    return response.json();
+    return data;
   }
 
   async delete(productId: string, variantId: string): Promise<void> {
-    const response = await fetch(
-      `${this.baseUrl}/${productId}/variants/${variantId}`,
-      {
-        method: 'DELETE',
-      }
-    );
-    if (!response.ok) throw new Error('Failed to delete variant');
+    await api.delete(`/api/v1/products/${productId}/variants/${variantId}`);
   }
 }
 
